@@ -3,6 +3,7 @@ import { CiEdit } from 'react-icons/ci';
 import { MdDelete } from 'react-icons/md';
 import './Tbl.css';
 import EmployeeCount from './EmployeeCount';
+import Loader from './Loader';
 
 function Tbl() {
   const initialList = [
@@ -47,11 +48,13 @@ function Tbl() {
   const [lists, setList] = useState([]);
   const [searchId, setSearchId] = useState('');
   const [editState, setEditState] = useState(-1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedLists = localStorage.getItem('employees');
     if (storedLists) {
       setList(JSON.parse(storedLists));
+      setLoading(false);
     } else {
       localStorage.setItem('employees', JSON.stringify(initialList));
       setList(initialList);
@@ -80,6 +83,9 @@ function Tbl() {
   }
 
   const filteredLists = lists.filter(item => item.id.toString().includes(searchId));
+  if (loading) {
+    return <Loader />; 
+  }
 
   return (
     <div>
@@ -162,6 +168,7 @@ function Edit({ current, handleUpdate }) {
 
   function handleSubmit(event) {
     event.preventDefault();
+    setLoading(true);
     const updatedItem = {
       id: current.id,
       image,

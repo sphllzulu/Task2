@@ -1,13 +1,11 @@
-
-
-
 import React, { useState, useEffect } from 'react';
 import { CiEdit } from 'react-icons/ci';
 import { MdDelete } from 'react-icons/md';
 import './Tbl.css';
 import Navbar from './Navbar';
 import BottomNavbarSmall from './BottomNavbarSmall';
-import './Removed.css'
+import Loader from './Loader'; 
+import './Removed.css';
 
 function InactiveEmployees() {
   const [lists, setList] = useState([]);
@@ -21,18 +19,22 @@ function InactiveEmployees() {
     position: '',
     status: ''
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedLists = localStorage.getItem('employees');
     if (storedLists) {
       setList(JSON.parse(storedLists));
     }
+    setLoading(false); 
   }, []);
 
   function handleDelete(id) {
+    setLoading(true); 
     const updatedList = lists.filter(item => item.id !== id);
     setList(updatedList);
     localStorage.setItem('employees', JSON.stringify(updatedList));
+    setLoading(false); 
   }
 
   function handleEdit(employee) {
@@ -50,7 +52,8 @@ function InactiveEmployees() {
   }
 
   function handleSave() {
-    const updatedList = lists.map(item => 
+    setLoading(true); 
+    const updatedList = lists.map(item =>
       item.id === formData.id ? formData : item
     );
     setList(updatedList);
@@ -65,9 +68,14 @@ function InactiveEmployees() {
       position: '',
       status: ''
     });
+    setLoading(false); 
   }
 
   const inactiveEmployees = lists.filter(item => item.status === 'Inactive');
+
+  if (loading) {
+    return <Loader />; 
+  }
 
   return (
     <div>
